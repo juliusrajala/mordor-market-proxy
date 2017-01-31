@@ -8,10 +8,17 @@
 (defn root-function []
   (content-type (response "Testing root route.") "text/html"))
 
+(def response-object 
+  {:something "Test string thing yeah."
+   :else "Not my string"})
+
+(defn get-response []
+  (content-type (response ( .toString response-object)) "text/html"))
+
 (defroutes app-routes
   (GET "/" [] (root-function))
   (context "/test" [] (defroutes api-routes
-    (GET "/" [] "Test route")))
+    (GET "/" [] (get-response))))
   (route/not-found "Not Found"))
 
 (def app

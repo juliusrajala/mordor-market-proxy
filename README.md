@@ -4,7 +4,9 @@ FIXME
 
 ## Prerequisites
 
-You will need [Leiningen][] 2.0.0 or above installed.
+- Install Java 1.8 (1.7 might do.)
+- You will need [Leiningen][] 2.0.0 or above installed.
+- Setup necessary config files for db-connection.
 
 [leiningen]: https://github.com/technomancy/leiningen
 
@@ -16,4 +18,4 @@ To start a web server for the application, run:
 
 ## License
 
-Copyright © 2017 FIXME
+Copyright © 2017 Topi Salonen & Julius Rajala
