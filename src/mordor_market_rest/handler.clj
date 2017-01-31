@@ -1,6 +1,7 @@
 (ns mordor-market-rest.handler
   (:use [ring.util.response])
   (:require [compojure.core :refer :all]
+            [mordor-market-rest.config :refer [db-config]]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
