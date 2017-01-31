@@ -24,6 +24,9 @@
 
 ; POST handler functions
 
+(defn make-purchase [id body]
+  (content-type (response (str "Purchase made with " id " and body " body)) "text/html")) 
+
 (def response-object 
   {:something "Test string thing yeah."
    :else "Not my string"})
@@ -43,8 +46,9 @@
   (context "/product" [] (defroutes product-routes
     (GET "/" [] (get-empty "PRODUCT"))
     (GET "/:id" [id] (get-product id))))
-  (context "/purchase" [] (defroutes purchase-routes
-    (GET "/" [] (get-empty "PURCHASE"))))
+  (context "/purchase/:id" [id] (defroutes purchase-routes
+    (GET "/" [] (get-empty "PURCHASE"))
+    (POST "/" {body :body} (make-purchase id body))))
   ;TODO: POST route for purchases with items in body.
   (route/not-found "Not Found"))
 
