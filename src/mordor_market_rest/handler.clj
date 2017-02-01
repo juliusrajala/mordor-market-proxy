@@ -16,8 +16,18 @@
 (defn get-user [id] 
   (content-type (response (str "User with id " id)) "text/html")) ; TODO: Get users ID from request.
 
+; SQL-commands for user-handling. TODO: simplify to single command.
+; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
+; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
+; cur.execute("SELECT balance FROM users WHERE rfid = %s" % rfid)
+
 (defn get-product [id]
   (content-type (response (str "Product with id " id)) "text/html")) ; TODO: Get item id from request.
+
+; TODO: This could likely be simplified into a single command, where null is returned were product not found.
+; SQL-commands for first checking if product exists and then selecting the details of said product.
+; cur.execute("SELECT * FROM products WHERE product_id = %s" % product_id)
+; cur.execute("SELECT product_name, product_price FROM products WHERE product_id = %s" % product_id)
 
 (defn get-empty [type]
   (content-type (response (str "No id of " type " specified")) "text/html")) ; TODO: String work here.
@@ -27,6 +37,13 @@
 (defn make-purchase [id body]
   (content-type (response (str "Purchase made with " id " and body " body)) "text/html")) 
 
+; SQL-command for updating users
+; cur.execute("UPDATE users SET balance=%s WHERE rfid = %s" % (self.balance, self.rfid))
+
+; SQL-command for adding purchase to history
+; cur.execute("INSERT INTO history(participant_rfid, event, date, time) VALUES (%s, '%s', CURRENT_DATE, CURRENT_TIME)" % (self.rfid, w))
+
+; Extra
 (def response-object 
   {:something "Test string thing yeah."
    :else "Not my string"})
