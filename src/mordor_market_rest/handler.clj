@@ -10,9 +10,9 @@
             [compojure.route :as route]))
 
 (defn pool [config]
-  (let [cdps (doto (ComboPooleDataSource.)
+  (let [cdps (doto (ComboPooledDataSource.)
     (.setDriverClass (:className config))
-    (.setJdbcUrl (str "jdbc:" (:subprotocol config) (:host config) (:subname config)))
+    (.setJdbcUrl (str "jdbc:" (:subprotocol config) (:host config) (:port config) "/" (:subname config)))
     (.setUser (:user config))
     (.setPassword (:password config))
     (.setMaxPoolSize 2)
@@ -29,8 +29,14 @@
 
 ; GET handler functions
 
-(defn get-user [id] 
-  (content-type (response (str "User with id " id)) "text/html")) ; TODO: Get users ID from request.
+; (defn get-user [id] 
+;   (content-type (response (str db-config)) "text/html")) ; TODO: Get users ID from request.
+
+(defn get-user [id]
+  (content-type 
+    (sql/with-connection (db-connection)
+    (response (sql/with-query-results results
+       ["select * from users"])) "text/html"))) ; TODO: Get users ID from request.
 
 ; SQL-commands for user-handling. TODO: simplify to single command.
 ; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
