@@ -56,14 +56,15 @@
 
 ; POST handler functions
 
-(defn update-history [event])
+(defn update-history [user product])
 
 (defn update-user [user-id price])
 
 (defn post-purchase [body]
   (response
-    (cond (do (update-history) (update-user))
-    (empty? results){:status 404, :title "Post failed", :description "Something went wrong with your purchase"}
+    (let [user (:user body) product (:product body)])
+    (cond (do (update-history user product) (update-user (:rfid user) (:price product)))
+    (empty? results) {:status 404, :title "Post failed", :description "Something went wrong with your purchase"}
     :else (response (first results)))))
 
 ; SQL-command for updating users
