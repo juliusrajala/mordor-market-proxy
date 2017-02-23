@@ -29,9 +29,6 @@
 
 ; GET handler functions
 
-; (defn get-user [id] 
-;   (content-type (response (str db-config)) "text/html")) ; TODO: Get users ID from request.
-
 (defn get-user [id]
   (response
     (sql/with-connection (db-connection)
@@ -41,26 +38,33 @@
           (empty? results) {:status 404}
           :else (response (first results)))))))
 
-; SQL-commands for user-handling. TODO: simplify to single command.
-; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
-; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
-; cur.execute("SELECT balance FROM users WHERE rfid = %s" % rfid)
-
 (defn get-product [id]
-  (content-type (response (str "Product with id " id)) "text/html")) ; TODO: Get item id from request.
+  (response
+    (sql/with-connection (db-connection)
+      (sql/with-query-results results
+        ["SELECT * FROM products where product_id = ?" id]
+        (cond
+          (empty? results) {:status 404, :title "Not found", :description (str "Product with id " id " was not found")}
+          :else (response (first results)))))))
 
-; TODO: This could likely be simplified into a single command, where null is returned were product not found.
-; SQL-commands for first checking if product exists and then selecting the details of said product.
-; cur.execute("SELECT * FROM products WHERE product_id = %s" % product_id)
-; cur.execute("SELECT product_name, product_price FROM products WHERE product_id = %s" % product_id)
-
-(defn get-empty [type]
-  (content-type (response (str "No id of " type " specified")) "text/html")) ; TODO: String work here.
+(defn get-all-products []
+  (response
+    (sql/with-connection (db-connection)
+      (sql/with-query-results results
+        ["select * from products"]
+        (into [] results)))))
 
 ; POST handler functions
 
-(defn make-purchase [id body]
-  (content-type (response (str "Purchase made with " id " and body " body)) "text/html")) 
+(defn update-history [event])
+
+(defn update-user [user-id price])
+
+(defn post-purchase [body]
+  (response
+    (cond (do (update-history) (update-user))
+    (empty? results){:status 404, :title "Post failed", :description "Something went wrong with your purchase"}
+    :else (response (first results)))))
 
 ; SQL-command for updating users
 ; cur.execute("UPDATE users SET balance=%s WHERE rfid = %s" % (self.balance, self.rfid))
@@ -84,15 +88,13 @@
   (context "/test" [] (defroutes test-routes
     (GET "/" [] (get-response))))
   (context "/user" [] (defroutes user-routes
-    (GET "/" [] (get-empty "USER"))
     (GET "/:id" [id] (get-user id))))
   (context "/product" [] (defroutes product-routes
-    (GET "/" [] (get-empty "PRODUCT"))
+    (GET "/" [] (get-all-products))
     (GET "/:id" [id] (get-product id))))
   (context "/purchase/:id" [id] (defroutes purchase-routes
     (GET "/" [] (get-empty "PURCHASE"))
-    (POST "/" {body :body} (make-purchase id body))))
-  ;TODO: POST route for purchases with items in body.
+    (POST "/" {body :body} (post-purchase id body))))
   (route/not-found "Not Found"))
 
 (def app

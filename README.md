@@ -19,3 +19,5 @@ To start a web server for the application, run:
 ## License
 
 Copyright © 2017 Topi Salonen & Julius Rajala
+
+MIT License, feel to do whatever with this one. :)

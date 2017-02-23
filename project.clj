@@ -1,6 +1,6 @@
 (defproject mordor-market-rest "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "This is a REST-api for a simple shop that stores data to a postgreSQL-db."
+  :url "https://github.com/juliusrajala/mordor-market-proxy"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
