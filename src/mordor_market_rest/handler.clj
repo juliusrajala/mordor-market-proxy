@@ -1,4 +1,5 @@
 (ns mordor-market-rest.handler
+  (:import com.mchange.v2.c3p0.ComboPooledDataSource)
   (:use [ring.util.response])
   (:use [cheshire.core])
   (:require [compojure.core :refer :all]
@@ -7,6 +8,21 @@
             [ring.middleware.json :as middleware]
             [clojure.java.jdbc :as sql]
             [compojure.route :as route]))
+
+(defn pool [config]
+  (let [cdps (doto (ComboPooleDataSource.)
+    (.setDriverClass (:className config))
+    (.setJdbcUrl (str "jdbc:" (:subprotocol config) (:host config) (:subname config)))
+    (.setUser (:user config))
+    (.setPassword (:password config))
+    (.setMaxPoolSize 2)
+    (.setMinPoolSize 1)
+    (.setInitialPoolSize 1))]
+  {:datasource cdps}))
+
+(def pooled-db(delay (pool db-config)))
+
+(defn db-connection [] @pooled-db)
 
 (defn root-function []
   (content-type (response "Testing root route.") "text/html"))
@@ -43,7 +59,8 @@
 ; SQL-command for adding purchase to history
 ; cur.execute("INSERT INTO history(participant_rfid, event, date, time) VALUES (%s, '%s', CURRENT_DATE, CURRENT_TIME)" % (self.rfid, w))
 
-; Extra
+; RESPONSE-JSON
+
 (def response-object 
   {:something "Test string thing yeah."
    :else "Not my string"})
