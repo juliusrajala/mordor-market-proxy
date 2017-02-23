@@ -14,13 +14,13 @@
     (.setDriverClass (:className config))
     (.setJdbcUrl (str "jdbc:" (:subprotocol config) (:host config) (:port config) "/" (:subname config)))
     (.setUser (:user config))
-    (.setPassword (:password config))
+    ; (.setPassword (:password config))
     (.setMaxPoolSize 2)
     (.setMinPoolSize 1)
     (.setInitialPoolSize 1))]
   {:datasource cdps}))
 
-(def pooled-db(delay (pool db-config)))
+(def pooled-db (delay (pool db-config)))
 
 (defn db-connection [] @pooled-db)
 
@@ -33,10 +33,13 @@
 ;   (content-type (response (str db-config)) "text/html")) ; TODO: Get users ID from request.
 
 (defn get-user [id]
-  (content-type 
+  (response
     (sql/with-connection (db-connection)
-    (response (sql/with-query-results results
-       ["select * from users"])) "text/html"))) ; TODO: Get users ID from request.
+      (sql/with-query-results results
+        ["SELECT * FROM users where rfid = ?" id]
+        (cond
+          (empty? results) {:status 404}
+          :else (response (first results)))))))
 
 ; SQL-commands for user-handling. TODO: simplify to single command.
 ; cur.execute("SELECT * FROM users WHERE rfid = %s" % rfid)
